@@ -80,7 +80,10 @@ public class AnimationView extends View {
 	public static float screenDpi;
 
 	int cX, cY;
-	long radius;
+	int radius;
+	int touchDistance;
+	int touchDelta;
+
 	double hord, alpha, theta;
 
 	int newX, newY;
@@ -252,6 +255,13 @@ public class AnimationView extends View {
 													* (point.x - cX)
 													+ (point.y - cY)
 													* (point.y - cY))));
+				touchDistance = (int) Math.sqrt(Math.pow(cX - point.x, 2)
+						+ Math.pow(cY - point.y, 2));
+				touchDelta = Math.abs(touchDistance - radius);
+				if (touchDelta > 0) {
+					Log.d(TAG, "radius, dist, delta " + radius + "..."
+							+ touchDistance + "..." + touchDelta);
+				}
 
 				// Log.d(TAG, "alpha" + alpha + "; theta " + theta);
 
@@ -285,11 +295,12 @@ public class AnimationView extends View {
 				} else if (point.x < cX) {
 					touchAngle = (float) Math.toDegrees(Math.PI);
 				}
-
+				// ////////////////grey - correct
 				if (((touchAngle < startAngle) && (touchAngle < 357))
 						|| ((touchAngle > startAngle) && (touchAngle > 270) && (startAngle < 90))) {
 					sweepAngle = (-1) * (float) Math.toDegrees(theta);
 				}
+				// ///////////red - invalid
 				if (((touchAngle > startAngle) && (touchAngle < 270))
 						|| ((touchAngle < startAngle) && (touchAngle < 90) && (startAngle > 270))) {
 					sweepAngle = (float) Math.toDegrees(theta);
@@ -297,13 +308,14 @@ public class AnimationView extends View {
 
 				// ////////////////
 				// ///////////////change theta to alpha again if needed
-				if (touchActive && sweepAngle > 0) {
+				if ((touchActive && sweepAngle > 0)
+						|| (touchDelta >= bm_offsetX / 3)) {
 					// Log.d(TAG, "sweep red: " + sweepAngle + "start was "
 					// + startAngle + "; touchAngle" + touchAngle);
 					paintText.setColor(Color.RED);
 					paintTouch.setColor(Color.RED);
 					tv2.setTextColor(Color.RED);
-				} else {
+				} else if (touchDelta < bm_offsetX / 3) {
 					// Log.d(TAG, "sweep gray: " + sweepAngle + "start was "
 					// + startAngle + "; touchAngle" + touchAngle);
 					paintText.setColor(Color.BLACK);
@@ -317,7 +329,8 @@ public class AnimationView extends View {
 							paintTouch);
 				}
 				// /////////////
-				if (speed > 0 && theta > 0 && sweepAngle < 0) {
+				if (speed > 0 && theta > 0 && sweepAngle < 0
+						&& (touchDelta < bm_offsetX / 3)) {
 					latency = theta * 1000.0 / speed;
 					if (latency > 30 && latency < 220
 							&& myLatency.size() < 1000) { // 30
@@ -366,6 +379,10 @@ public class AnimationView extends View {
 					paintText.setStrokeWidth(4);
 					paintText.setTextSize(100 * screenDpi / 4);
 					canvas.drawText("DONE", cX - 80, cY, paintText);
+				}
+
+				if (median > 0) {
+					tv2.setTextColor(Color.BLACK);
 				}
 
 				tv3.setText("average: " + String.format("%.2f", averageLatency)
@@ -438,6 +455,9 @@ public class AnimationView extends View {
 													* (point.x - cX)
 													+ (point.y - cY)
 													* (point.y - cY))));
+				touchDistance = (int) Math.sqrt(Math.pow(cX - point.x, 2)
+						+ Math.pow(cY - point.y, 2));
+				touchDelta = Math.abs(touchDistance - radius);
 
 				// Log.d(TAG, "alpha" + alpha + "; theta " + theta);
 
@@ -483,13 +503,14 @@ public class AnimationView extends View {
 
 				// ////////////////
 				// ///////////////change theta to alpha again if needed
-				if (touchActive && sweepAngle < 0) {
+				if ((touchActive && sweepAngle < 0)
+						|| (touchDelta >= bm_offsetX / 3)) {
 					// Log.d(TAG, "sweep red: " + sweepAngle + "start was "
 					// + startAngle + "; touchAngle" + touchAngle);
 					paintText.setColor(Color.RED);
 					paintTouch.setColor(Color.RED);
 					tv2.setTextColor(Color.RED);
-				} else {
+				} else if (touchDelta < bm_offsetX / 3) {
 					// Log.d(TAG, "sweep gray: " + sweepAngle + "start was "
 					// + startAngle + "; touchAngle" + touchAngle);
 					paintText.setColor(Color.BLACK);
@@ -503,7 +524,8 @@ public class AnimationView extends View {
 							paintTouch);
 				}
 				// /////////////
-				if (speed > 0 && theta > 0 && sweepAngle > 0) {
+				if (speed > 0 && theta > 0 && sweepAngle > 0
+						&& (touchDelta < bm_offsetX / 3)) {
 					latency = theta * 1000.0 / speed;
 					if (latency > 30 && latency < 220
 							&& myLatency.size() < 1000) { // 30
@@ -560,6 +582,9 @@ public class AnimationView extends View {
 					paintText.setStrokeWidth(6);
 					paintText.setTextSize(110 * screenDpi / 4);
 					canvas.drawText("DONE", cX - 80, cY, paintText);
+				}
+				if (median > 0) {
+					tv2.setTextColor(Color.BLACK);
 				}
 
 				tv3.setText("average: " + String.format("%.2f", averageLatency)
