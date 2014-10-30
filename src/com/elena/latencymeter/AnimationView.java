@@ -21,7 +21,6 @@ import android.graphics.RectF;
 import android.os.SystemClock;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
@@ -35,7 +34,7 @@ public class AnimationView extends View {
 	Paint paint, paintText, paintTouch, paintStat;
 
 	Bitmap bm;
-	// Bitmap bmScaled;
+
 	int bm_offsetX, bm_offsetY;
 
 	double rawA;
@@ -55,8 +54,6 @@ public class AnimationView extends View {
 
 	float step; // distance each step
 	public static float distance; // distance moved
-
-	// float curX, curY;
 
 	float[] pos;
 	float[] tan;
@@ -118,26 +115,19 @@ public class AnimationView extends View {
 		DisplayMetrics displaymetrics = new DisplayMetrics();
 		WindowManager wm = ((Activity) getContext()).getWindowManager();
 		wm.getDefaultDisplay().getMetrics(displaymetrics);
-		// getContext().getSystemService(Context.WINDOW_SERVICE).getDefaultDisplay().getMetrics(displaymetrics);
+
 		screenWidth = displaymetrics.widthPixels;
 		screenHeight = displaymetrics.heightPixels;
 		screenDpi = displaymetrics.density;
-		// Log.d(TAG, "screen size from anim view: " + screenWidth + ", "
-		// + screenHeight + "; dpi: " + screenDpi);
+
 		cX = (screenWidth - bm_offsetX / 2 - 10) / 2;
 		cY = (screenHeight - bm_offsetY / 2 - 10) / 2;
-		// if (cX == 220) {
-		// radius = Math.round((cX - 160) * 4 / screenDpi);
-		// } else {
-		// radius = Math.round((cX - 220) * 4 / screenDpi);
+
 		radius = cX - bm_offsetX;
-		// Log.d(TAG, "cX, cY, radius: " + cX + " " + cY + " " + radius + " "
-		// + ((cX - 220) * 4 / screenDpi));
-		// }
 
 		paint = new Paint();
 		paint.setColor(Color.BLUE);
-		paint.setStrokeWidth(bm.getWidth() / 3);// * screenDpi / 4);
+		paint.setStrokeWidth(bm.getWidth() / 3);
 		paint.setStyle(Paint.Style.STROKE);
 
 		paintTouch = new Paint();
@@ -168,16 +158,8 @@ public class AnimationView extends View {
 		pathMeasure = new PathMeasure(animPath, false);
 		pathLength = pathMeasure.getLength();
 
-		// Toast.makeText(getContext(),
-		// "Start follow the ball after speed is measured",
-		// Toast.LENGTH_LONG).show();
-
-		// step = 30 * screenDpi / 4;
-
 		distance = 0;
-		Log.d(TAG, "I am here " + distance + " " + pathLength);
-		// millis1 = SystemClock.elapsedRealtime();
-		// Log.d(TAG, "time 1 " + millis1);
+
 		pos = new float[2];
 		tan = new float[2];
 
@@ -186,8 +168,6 @@ public class AnimationView extends View {
 
 	@Override
 	protected void onDraw(Canvas canvas) {
-
-		// Log.d(TAG, "direction on anim " + MainActivity.clockWise);
 
 		tv1 = (TextView) this.getRootView().findViewById(R.id.textView1);
 		tv2 = (TextView) this.getRootView().findViewById(R.id.textView2);
@@ -208,8 +188,6 @@ public class AnimationView extends View {
 
 		}
 
-		// canvas.drawText(textToShow, 20, 170, paintText);
-
 		tv1.setText(textToShow);
 
 		if (MainActivity.clockWise) {
@@ -221,9 +199,7 @@ public class AnimationView extends View {
 				pathMeasure.getPosTan(distance, pos, tan);
 
 				matrix.reset();
-				// float degrees = (float) (Math.atan2(tan[1], tan[0]) * 180.0 /
-				// Math.PI);
-				// matrix.postRotate(degrees, bm_offsetX, bm_offsetY);
+
 				matrix.postTranslate(pos[0] - bm_offsetX, pos[1] - bm_offsetY);
 
 				canvas.drawBitmap(bm, matrix, null);
@@ -258,12 +234,6 @@ public class AnimationView extends View {
 				touchDistance = (int) Math.sqrt(Math.pow(cX - point.x, 2)
 						+ Math.pow(cY - point.y, 2));
 				touchDelta = Math.abs(touchDistance - radius);
-				if (touchDelta > 0) {
-					Log.d(TAG, "radius, dist, delta " + radius + "..."
-							+ touchDistance + "..." + touchDelta);
-				}
-
-				// Log.d(TAG, "alpha" + alpha + "; theta " + theta);
 
 				// ////////////////try to fill sector///////////
 				RectF oval = new RectF((float) (cX - radius),
@@ -276,7 +246,7 @@ public class AnimationView extends View {
 				} else if (pos[0] > cX) {
 					rawA = 0;
 				}
-				// Log.d(TAG, "first angle is " + rawA);
+
 				if (Math.toDegrees(rawA) < 0) {
 					startAngle = (float) Math.toDegrees(rawA) + 360;
 				} else {
@@ -310,14 +280,12 @@ public class AnimationView extends View {
 				// ///////////////change theta to alpha again if needed
 				if ((touchActive && sweepAngle > 0)
 						|| (touchDelta >= bm_offsetX / 3)) {
-					// Log.d(TAG, "sweep red: " + sweepAngle + "start was "
-					// + startAngle + "; touchAngle" + touchAngle);
+
 					paintText.setColor(Color.RED);
 					paintTouch.setColor(Color.RED);
 					tv2.setTextColor(Color.RED);
 				} else if (touchDelta < bm_offsetX / 3) {
-					// Log.d(TAG, "sweep gray: " + sweepAngle + "start was "
-					// + startAngle + "; touchAngle" + touchAngle);
+
 					paintText.setColor(Color.BLACK);
 					paintTouch.setColor(Color.GRAY);
 					tv2.setTextColor(Color.BLACK);
@@ -341,18 +309,17 @@ public class AnimationView extends View {
 						// "cheating"
 						// samples
 						myLatency.add(latency);
-						// Log.d(TAG, "theta, sweep, added " + theta + "..."
-						// + sweepAngle + "..." + latency);
+
 					}
 				} else {
 					latency = 0;
 				}
 				if (median > 0) {
-					// paintStat.setColor(Color.parseColor("#008000"));
+
 					tv3.setTextColor(Color.parseColor("#008000"));
 					tv4.setTextColor(Color.parseColor("#008000"));
 				} else {
-					// paintStat.setColor(Color.parseColor("#FFA500"));
+
 					tv3.setTextColor(Color.parseColor("#FFA500"));
 					tv4.setTextColor(Color.parseColor("#FFA500"));
 				}
@@ -362,12 +329,6 @@ public class AnimationView extends View {
 						+ " ms;    event rate: "
 						+ String.format("%.2f", eventRate) + " Hz");
 
-				// if (touchActive && myLatency.size() < 100) {
-				// paintText.setColor(Color.parseColor("#FFA500"));
-				// paintText.setStrokeWidth(3);
-				// paintText.setTextSize(80 * screenDpi / 4);
-				// canvas.drawText("training", cX - 70, cY, paintText);
-				// } else
 				if (touchActive && myLatency.size() < 1000) {
 					paintText.setColor(Color.parseColor("#FFA500"));
 					paintText.setStrokeWidth(2);
@@ -394,8 +355,6 @@ public class AnimationView extends View {
 						+ "    stdev: " + String.format("%.2f", stdevLatency)
 						+ " ms");
 
-				// /////////
-				// distance += MainActivity.speedValue * 5;// step;
 				distance += step * 90 * screenDpi / 4;
 			} else {
 				if (count == 0) {
@@ -459,8 +418,6 @@ public class AnimationView extends View {
 						+ Math.pow(cY - point.y, 2));
 				touchDelta = Math.abs(touchDistance - radius);
 
-				// Log.d(TAG, "alpha" + alpha + "; theta " + theta);
-
 				// ////////////////try to fill sector///////////
 				RectF oval = new RectF((float) (cX - radius),
 						(float) (cY - radius), (float) (cX + radius),
@@ -472,7 +429,7 @@ public class AnimationView extends View {
 				} else if (pos[0] > cX) {
 					rawA = 0;
 				}
-				// Log.d(TAG, "first angle is " + rawA);
+
 				if (Math.toDegrees(rawA) < 0) {
 					startAngle = (float) Math.toDegrees(rawA) + 360;
 				} else {
@@ -505,14 +462,12 @@ public class AnimationView extends View {
 				// ///////////////change theta to alpha again if needed
 				if ((touchActive && sweepAngle < 0)
 						|| (touchDelta >= bm_offsetX / 3)) {
-					// Log.d(TAG, "sweep red: " + sweepAngle + "start was "
-					// + startAngle + "; touchAngle" + touchAngle);
+
 					paintText.setColor(Color.RED);
 					paintTouch.setColor(Color.RED);
 					tv2.setTextColor(Color.RED);
 				} else if (touchDelta < bm_offsetX / 3) {
-					// Log.d(TAG, "sweep gray: " + sweepAngle + "start was "
-					// + startAngle + "; touchAngle" + touchAngle);
+
 					paintText.setColor(Color.BLACK);
 					paintTouch.setColor(Color.GRAY);
 					tv2.setTextColor(Color.BLACK);
@@ -536,41 +491,26 @@ public class AnimationView extends View {
 						// "cheating"
 						// samples
 						myLatency.add(latency);
-						// Log.d(TAG, "theta, sweep, added " + theta + "..."
-						// + sweepAngle + "..." + latency);
+
 					}
 				} else {
 					latency = 0;
 				}
 				if (median > 0) {
-					// paintStat.setColor(Color.parseColor("#008000"));
+
 					tv3.setTextColor(Color.parseColor("#008000"));
 					tv4.setTextColor(Color.parseColor("#008000"));
 				} else {
-					// paintStat.setColor(Color.parseColor("#FFA500"));
+
 					tv3.setTextColor(Color.parseColor("#FFA500"));
 					tv4.setTextColor(Color.parseColor("#FFA500"));
 				}
-				// if (touchActive) {
-				// canvas.drawText(
-				// "current latency is " + String.format("%.2f", latency)
-				// + " ms; samples: " + myLatency.size(), 20, 230,
-				// paintText);
-				// } else {
-				// canvas.drawText("current latency is 0.00 ms", 20, 230,
-				// paintText);
-				// }
+
 				tv2.setText("current latency: "
 						+ String.format("%.2f", latency)
 						+ " ms;    event rate: "
 						+ String.format("%.2f", eventRate) + " Hz");
 
-				// if (touchActive && myLatency.size() <= 100) {
-				// paintText.setColor(Color.parseColor("#FFA500"));
-				// paintText.setStrokeWidth(3);
-				// paintText.setTextSize(80 * screenDpi / 4);
-				// canvas.drawText("training", cX - 70, cY, paintText);
-				// } else
 				if (touchActive && myLatency.size() < 1000) {
 					paintText.setColor(Color.parseColor("#FFA500"));
 					paintText.setStrokeWidth(3);
@@ -596,8 +536,6 @@ public class AnimationView extends View {
 						+ "    stdev: " + String.format("%.2f", stdevLatency)
 						+ " ms");
 
-				// /////////
-				// distance += MainActivity.speedValue * 5;// step;
 				distance -= step * 90 * screenDpi / 4;
 			} else {
 				if (count == 0) {
@@ -640,8 +578,6 @@ public class AnimationView extends View {
 			eventRate = 0;
 			touchCount = 0;
 			millis3 = SystemClock.elapsedRealtime();
-			// touchPath.reset();
-			// touchPath.moveTo(event.getX(), event.getY());
 			break;
 		case MotionEvent.ACTION_MOVE:
 			point.x = (int) event.getX();
@@ -649,14 +585,10 @@ public class AnimationView extends View {
 
 			touchActive = true;
 			touchCount += event.getHistorySize();
-			// Log.d(TAG, "event size " + event.getHistorySize());
-			// if (touchCount == 1) {
-			// millis3 = SystemClock.elapsedRealtime();
-			// } else {
+
 			millis4 = SystemClock.elapsedRealtime();
 			eventRate = touchCount * 1000.0 / (millis4 - millis3);
-			// }
-			// touchPath.lineTo(event.getX(), event.getY());
+
 			break;
 		case MotionEvent.ACTION_UP:
 			point.x = (int) cX;
@@ -664,20 +596,16 @@ public class AnimationView extends View {
 			alpha = 0;
 			theta = 0;
 			touchActive = false;
-			// millis4 = SystemClock.elapsedRealtime();
-			// eventRate = touchCount * 1000.0 / (millis4 - millis3);
 
 			if (myLatency.size() == 1000) {
 
-				// Log.d(TAG, "count + time " + touchCount + ".."
-				// + (millis4 - millis3));
 				double sum = 0;
 				double devSum = 0;
 				double[] numArray = new double[myLatency.size()];
 				for (int i = 0; i < myLatency.size(); i++) {
 					sum += myLatency.get(i);
 					numArray[i] = myLatency.get(i);
-					// Log.d(TAG, "array " + numArray[i]);
+
 				}
 				averageLatency = sum * 1.0 / (myLatency.size());
 				for (int i = 0; i < myLatency.size(); i++) {
@@ -696,9 +624,7 @@ public class AnimationView extends View {
 				} else {
 					median = numArray[middle + 1];
 				}
-				Log.d(TAG, "median " + median);
-				// myLatency.clear();
-				// touchPath.lineTo(event.getX(), event.getY());
+
 			}
 			break;
 

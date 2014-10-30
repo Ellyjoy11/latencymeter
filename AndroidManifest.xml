@@ -24,16 +24,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name="com.elena.latencymeter.SettingsFragment"
-            android:configChanges="orientation"
-            android:label="@string/action_settings" >
-        </activity>
-        <activity
-            android:name="com.elena.latencymeter.SetPreferences"
-            android:configChanges="orientation"
-            android:label="@string/action_settings" >
-        </activity>
     </application>
 
 </manifest>

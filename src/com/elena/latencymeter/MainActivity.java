@@ -42,7 +42,6 @@ public class MainActivity extends Activity {
 		}
 
 		setContentView(R.layout.activity_main);
-		// Log.d(TAG, "here");
 
 		mCheckBox = (CheckBox) findViewById(R.id.checkBox);
 		if (mCheckBox.isChecked()) {
@@ -68,19 +67,7 @@ public class MainActivity extends Activity {
 		getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
 		screenWidth = displaymetrics.widthPixels;
 		screenHeight = displaymetrics.heightPixels;
-		// Log.d(TAG, "screen size: " + screenWidth + ", " + screenHeight);
-		/*
-		 * SharedPreferences userPref = PreferenceManager
-		 * .getDefaultSharedPreferences(this);
-		 * 
-		 * speedValue = Integer.parseInt(userPref.getString("speed", "3"));
-		 * Log.d(TAG, "speed on main " + speedValue);
-		 * com.elena.latencymeter.AnimationView animationView =
-		 * (com.elena.latencymeter.AnimationView) findViewById(R.id.animView);
-		 * animationView.invalidate(); Toast.makeText(getBaseContext(),
-		 * "Measuring speed, please wait...", Toast.LENGTH_LONG).show(); //
-		 * animationView.draw(new Canvas());
-		 */
+
 	}
 
 	@Override
@@ -91,11 +78,7 @@ public class MainActivity extends Activity {
 	}
 
 	public boolean onOptionsItemSelected(MenuItem item) {
-		// if (item.getItemId() == R.id.action_settings) {
-		// Intent intent = new Intent(this, SetPreferences.class);
-		// startActivity(intent);
-		// return true;
-		// }
+
 		if (item.getItemId() == R.id.about) {
 			AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
