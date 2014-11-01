@@ -32,6 +32,7 @@ public class AnimationView extends View {
 
 	public static final String TAG = "LatencyMeter";
 	Paint paint, paintText, paintTouch, paintStat;
+	Paint wrongMove;
 
 	Bitmap bm;
 
@@ -47,6 +48,7 @@ public class AnimationView extends View {
 
 	Path animPath;
 	Path touchPath;
+
 	Point point = new Point();
 
 	PathMeasure pathMeasure;
@@ -146,6 +148,11 @@ public class AnimationView extends View {
 		paintStat.setStrokeWidth(2);
 		paintStat.setTextSize(60 * screenDpi / 4);
 		paintStat.setStyle(Paint.Style.FILL_AND_STROKE);
+
+		wrongMove = new Paint();
+		wrongMove.setColor(Color.RED);
+		wrongMove.setStrokeWidth(10);
+		wrongMove.setStyle(Paint.Style.STROKE);
 
 		count = 0;
 		touchActive = false;
@@ -284,6 +291,13 @@ public class AnimationView extends View {
 					paintText.setColor(Color.RED);
 					paintTouch.setColor(Color.RED);
 					tv2.setTextColor(Color.RED);
+					if (touchActive && touchDelta >= bm_offsetX / 3) {
+						canvas.drawCircle(cX, cY, radius - bm_offsetX / 3,
+								wrongMove);
+						canvas.drawCircle(cX, cY, radius + bm_offsetX / 3,
+								wrongMove);
+
+					}
 				} else if (touchDelta < bm_offsetX / 3) {
 
 					paintText.setColor(Color.BLACK);
@@ -466,6 +480,13 @@ public class AnimationView extends View {
 					paintText.setColor(Color.RED);
 					paintTouch.setColor(Color.RED);
 					tv2.setTextColor(Color.RED);
+					if (touchActive && touchDelta >= bm_offsetX / 3) {
+						canvas.drawCircle(cX, cY, radius - bm_offsetX / 3,
+								wrongMove);
+						canvas.drawCircle(cX, cY, radius + bm_offsetX / 3,
+								wrongMove);
+
+					}
 				} else if (touchDelta < bm_offsetX / 3) {
 
 					paintText.setColor(Color.BLACK);
