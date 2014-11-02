@@ -129,7 +129,7 @@ public class AnimationView extends View {
 
 		paint = new Paint();
 		paint.setColor(Color.BLUE);
-		paint.setStrokeWidth(bm.getWidth() / 3);
+		paint.setStrokeWidth(bm_offsetX);
 		paint.setStyle(Paint.Style.STROKE);
 
 		paintTouch = new Paint();
@@ -286,19 +286,19 @@ public class AnimationView extends View {
 				// ////////////////
 				// ///////////////change theta to alpha again if needed
 				if ((touchActive && sweepAngle > 0)
-						|| (touchDelta >= bm_offsetX / 3)) {
+						|| (2 * touchDelta > bm_offsetX)) {
 
 					paintText.setColor(Color.RED);
 					paintTouch.setColor(Color.RED);
 					tv2.setTextColor(Color.RED);
-					if (touchActive && touchDelta >= bm_offsetX / 3) {
-						canvas.drawCircle(cX, cY, radius - bm_offsetX / 3,
+					if (touchActive && (2 * touchDelta > bm_offsetX)) {
+						canvas.drawCircle(cX, cY, radius - bm_offsetX / 2,
 								wrongMove);
-						canvas.drawCircle(cX, cY, radius + bm_offsetX / 3,
+						canvas.drawCircle(cX, cY, radius + bm_offsetX / 2,
 								wrongMove);
 
 					}
-				} else if (touchDelta < bm_offsetX / 3) {
+				} else if (2 * touchDelta <= bm_offsetX) {
 
 					paintText.setColor(Color.BLACK);
 					paintTouch.setColor(Color.GRAY);
@@ -312,7 +312,7 @@ public class AnimationView extends View {
 				}
 				// /////////////
 				if (speed > 0 && theta > 0 && sweepAngle < 0
-						&& (touchDelta < bm_offsetX / 3)) {
+						&& (2 * touchDelta <= bm_offsetX)) {
 					latency = theta * 1000.0 / speed;
 					if (latency > 30 && latency < 220
 							&& myLatency.size() < 1000) { // 30
@@ -475,19 +475,19 @@ public class AnimationView extends View {
 				// ////////////////
 				// ///////////////change theta to alpha again if needed
 				if ((touchActive && sweepAngle < 0)
-						|| (touchDelta >= bm_offsetX / 3)) {
+						|| (2 * touchDelta > bm_offsetX)) {
 
 					paintText.setColor(Color.RED);
 					paintTouch.setColor(Color.RED);
 					tv2.setTextColor(Color.RED);
-					if (touchActive && touchDelta >= bm_offsetX / 3) {
-						canvas.drawCircle(cX, cY, radius - bm_offsetX / 3,
+					if (touchActive && (2 * touchDelta > bm_offsetX)) {
+						canvas.drawCircle(cX, cY, radius - bm_offsetX / 2,
 								wrongMove);
-						canvas.drawCircle(cX, cY, radius + bm_offsetX / 3,
+						canvas.drawCircle(cX, cY, radius + bm_offsetX / 2,
 								wrongMove);
 
 					}
-				} else if (touchDelta < bm_offsetX / 3) {
+				} else if (2 * touchDelta <= bm_offsetX) {
 
 					paintText.setColor(Color.BLACK);
 					paintTouch.setColor(Color.GRAY);
@@ -501,7 +501,7 @@ public class AnimationView extends View {
 				}
 				// /////////////
 				if (speed > 0 && theta > 0 && sweepAngle > 0
-						&& (touchDelta < bm_offsetX / 3)) {
+						&& (2 * touchDelta <= bm_offsetX)) {
 					latency = theta * 1000.0 / speed;
 					if (latency > 30 && latency < 220
 							&& myLatency.size() < 1000) { // 30
