@@ -21,13 +21,14 @@ import android.graphics.RectF;
 import android.os.SystemClock;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.TextView;
 import android.widget.Toast;
 
-@SuppressLint("DrawAllocation")
+@SuppressLint({ "DrawAllocation", "ClickableViewAccessibility" })
 public class AnimationView extends View {
 
 	public static final String TAG = "LatencyMeter";
@@ -64,15 +65,18 @@ public class AnimationView extends View {
 	public static int count;
 	long millis1, millis2, millis3, millis4;
 	long time360 = 0;
-	long touchCount = 0;
+	long historicTime = 0;
+	int touchCount = 0;
 	double speed = 0;
 	double latency;
 	double averageLatency;
+	double averageDispatchLatency;
 	double median, minL, maxL;
 	double stdevLatency;
 	double eventRate;
 
 	List<Double> myLatency = new ArrayList<Double>();
+	List<Long> dispatchLatency = new ArrayList<Long>();
 
 	public static int screenWidth;
 	public static int screenHeight;
@@ -87,7 +91,7 @@ public class AnimationView extends View {
 
 	int newX, newY;
 	double ballA, ballB, touchA, touchB;
-	TextView tv1, tv2, tv3, tv4, tv5;
+	TextView tv1, tv2, tv3, tv4, tv5, tv6;
 
 	public AnimationView(Context context) {
 		super(context);
@@ -182,6 +186,7 @@ public class AnimationView extends View {
 		tv3 = (TextView) this.getRootView().findViewById(R.id.textView3);
 		tv4 = (TextView) this.getRootView().findViewById(R.id.textView4);
 		tv5 = (TextView) this.getRootView().findViewById(R.id.textView5);
+		tv6 = (TextView) this.getRootView().findViewById(R.id.textView6);
 
 		canvas.drawPath(animPath, paint);
 
@@ -338,10 +343,12 @@ public class AnimationView extends View {
 
 					tv3.setTextColor(Color.parseColor("#008000"));
 					tv4.setTextColor(Color.parseColor("#008000"));
+					tv6.setTextColor(Color.parseColor("#008000"));
 				} else {
 
 					tv3.setTextColor(Color.parseColor("#FFA500"));
 					tv4.setTextColor(Color.parseColor("#FFA500"));
+					tv6.setTextColor(Color.parseColor("#FFA500"));
 				}
 
 				tv2.setText("current latency: "
@@ -375,6 +382,8 @@ public class AnimationView extends View {
 						+ " ms    max: " + String.format("%.2f", maxL)
 						+ "    stdev: " + String.format("%.2f", stdevLatency)
 						+ " ms");
+				tv6.setText("average dispatch latency: "
+						+ String.format("%.2f", averageDispatchLatency) + " ms");
 
 				distance += step * 90 * screenDpi / 4;
 			} else {
@@ -532,10 +541,12 @@ public class AnimationView extends View {
 
 					tv3.setTextColor(Color.parseColor("#008000"));
 					tv4.setTextColor(Color.parseColor("#008000"));
+					tv6.setTextColor(Color.parseColor("#008000"));
 				} else {
 
 					tv3.setTextColor(Color.parseColor("#FFA500"));
 					tv4.setTextColor(Color.parseColor("#FFA500"));
+					tv6.setTextColor(Color.parseColor("#FFA500"));
 				}
 
 				tv2.setText("current latency: "
@@ -568,6 +579,8 @@ public class AnimationView extends View {
 						+ " ms    max: " + String.format("%.2f", maxL)
 						+ "    stdev: " + String.format("%.2f", stdevLatency)
 						+ " ms");
+				tv6.setText("average dispatch latency: "
+						+ String.format("%.2f", averageDispatchLatency) + " ms");
 
 				distance -= step * 90 * screenDpi / 4;
 			} else {
@@ -605,6 +618,7 @@ public class AnimationView extends View {
 			myLatency.clear();
 			median = 0;
 			averageLatency = 0;
+			averageDispatchLatency = 0;
 			minL = 0;
 			maxL = 0;
 			stdevLatency = 0;
@@ -618,6 +632,17 @@ public class AnimationView extends View {
 
 			touchActive = true;
 			touchCount += event.getHistorySize();
+			if (event.getHistorySize() > 1) {
+				try {
+					historicTime = event.getHistoricalEventTime(event
+							.getHistorySize() - 1)
+							- event.getHistoricalEventTime(0);
+					dispatchLatency.add(historicTime);
+					Log.d(TAG, "event latency: " + historicTime);
+				} catch (IllegalArgumentException e) {
+					Log.d(TAG, e.toString());
+				}
+			}
 
 			millis4 = SystemClock.elapsedRealtime();
 			eventRate = touchCount * 1000.0 / (millis4 - millis3);
@@ -629,10 +654,12 @@ public class AnimationView extends View {
 			alpha = 0;
 			theta = 0;
 			touchActive = false;
+			// historicTime = 0;
 
 			if (myLatency.size() == 1000) {
 
 				double sum = 0;
+				double sum2 = 0;
 				double devSum = 0;
 				double[] numArray = new double[myLatency.size()];
 				for (int i = 0; i < myLatency.size(); i++) {
@@ -641,6 +668,11 @@ public class AnimationView extends View {
 
 				}
 				averageLatency = sum * 1.0 / (myLatency.size());
+				for (int i = 0; i < dispatchLatency.size(); i++) {
+					sum2 += dispatchLatency.get(i);
+
+				}
+				averageDispatchLatency = sum2 * 1.0 / (dispatchLatency.size());
 				for (int i = 0; i < myLatency.size(); i++) {
 					devSum += Math.pow(myLatency.get(i) - averageLatency, 2);
 				}

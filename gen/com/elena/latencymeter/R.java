@@ -29,7 +29,7 @@ public final class R {
         public static final int tennis_ball=0x7f020004;
     }
     public static final class id {
-        public static final int about=0x7f09000d;
+        public static final int about=0x7f09000e;
         public static final int animView=0x7f090000;
         public static final int checkBox=0x7f090003;
         public static final int checkBox2=0x7f090008;
@@ -43,6 +43,7 @@ public final class R {
         public static final int textView3=0x7f09000b;
         public static final int textView4=0x7f09000c;
         public static final int textView5=0x7f090007;
+        public static final int textView6=0x7f09000d;
     }
     public static final class layout {
         public static final int activity_main=0x7f030000;
