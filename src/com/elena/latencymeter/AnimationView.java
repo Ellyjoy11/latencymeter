@@ -634,8 +634,10 @@ public class AnimationView extends View {
 			touchCount += event.getHistorySize();
 			if (event.getHistorySize() > 1) {
 				try {
-					historicTime = event.getHistoricalEventTime(event
-							.getHistorySize() - 1)
+					// historicTime = event.getHistoricalEventTime(event
+					// .getHistorySize() - 1)
+					// - event.getHistoricalEventTime(0);
+					historicTime = event.getEventTime()
 							- event.getHistoricalEventTime(0);
 					dispatchLatency.add(historicTime);
 					Log.d(TAG, "event latency: " + historicTime);
