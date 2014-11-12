@@ -20,6 +20,7 @@ public class MainActivity extends Activity {
 	public static int screenWidth;
 	public static int screenHeight;
 	public static boolean clockWise;
+	public static boolean showSector;
 	public static final String TAG = "LatencyMeter";
 	public String appVersion;
 	public static int speedValue;
@@ -27,7 +28,7 @@ public class MainActivity extends Activity {
 
 	SeekBar speedBar;
 	AnimationView myView;
-	CheckBox mCheckBox;
+	CheckBox mCheckBox, mCheckBox2;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -48,6 +49,13 @@ public class MainActivity extends Activity {
 			clockWise = false;
 		} else {
 			clockWise = true;
+		}
+
+		mCheckBox2 = (CheckBox) findViewById(R.id.checkBox2);
+		if (mCheckBox2.isChecked()) {
+			showSector = false;
+		} else {
+			showSector = true;
 		}
 
 		speedBar = (SeekBar) findViewById(R.id.speedBar);
@@ -136,6 +144,16 @@ public class MainActivity extends Activity {
 		AnimationView.count = 0;
 		AnimationView.distance = 0;
 		myView.invalidate();
+	}
+
+	public void boxHideClicked(View view) {
+		if (mCheckBox2.isChecked()) {
+			showSector = false;
+		} else {
+			showSector = true;
+		}
+		Log.d(TAG, "show sector: " + showSector);
+
 	}
 
 }

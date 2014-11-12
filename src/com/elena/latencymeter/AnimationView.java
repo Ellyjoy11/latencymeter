@@ -87,7 +87,7 @@ public class AnimationView extends View {
 
 	int newX, newY;
 	double ballA, ballB, touchA, touchB;
-	TextView tv1, tv2, tv3, tv4;
+	TextView tv1, tv2, tv3, tv4, tv5;
 
 	public AnimationView(Context context) {
 		super(context);
@@ -123,7 +123,8 @@ public class AnimationView extends View {
 		screenDpi = displaymetrics.density;
 
 		cX = (screenWidth - bm_offsetX / 2 - 10) / 2;
-		cY = (screenHeight - bm_offsetY / 2 - 10) / 2;
+		cY = screenHeight - cX - 2 * bm_offsetY;
+		// cY = (screenHeight - bm_offsetY / 2 - 10) / 2;
 
 		radius = cX - bm_offsetX;
 
@@ -180,6 +181,7 @@ public class AnimationView extends View {
 		tv2 = (TextView) this.getRootView().findViewById(R.id.textView2);
 		tv3 = (TextView) this.getRootView().findViewById(R.id.textView3);
 		tv4 = (TextView) this.getRootView().findViewById(R.id.textView4);
+		tv5 = (TextView) this.getRootView().findViewById(R.id.textView5);
 
 		canvas.drawPath(animPath, paint);
 
@@ -225,8 +227,10 @@ public class AnimationView extends View {
 					touchA = 0;
 				}
 
-				paintTouch.setColor(Color.GREEN);
-				canvas.drawLine(point.x, point.y, cX, cY, paintTouch);
+				if (MainActivity.showSector) {
+					paintTouch.setColor(Color.GREEN);
+					canvas.drawLine(point.x, point.y, cX, cY, paintTouch);
+				}
 				paintTouch.setColor(Color.GRAY);
 
 				theta = Math
@@ -291,6 +295,7 @@ public class AnimationView extends View {
 					paintText.setColor(Color.RED);
 					paintTouch.setColor(Color.RED);
 					tv2.setTextColor(Color.RED);
+					tv5.setTextColor(Color.RED);
 					if (touchActive && (2 * touchDelta > bm_offsetX)) {
 						canvas.drawCircle(cX, cY, radius - bm_offsetX / 2,
 								wrongMove);
@@ -303,10 +308,11 @@ public class AnimationView extends View {
 					paintText.setColor(Color.BLACK);
 					paintTouch.setColor(Color.GRAY);
 					tv2.setTextColor(Color.BLACK);
+					tv5.setTextColor(Color.BLACK);
 				}
 
 				// /////////////////////
-				if (touchActive) {
+				if (touchActive && MainActivity.showSector) {
 					canvas.drawArc(oval, startAngle, sweepAngle, true,
 							paintTouch);
 				}
@@ -339,9 +345,9 @@ public class AnimationView extends View {
 				}
 
 				tv2.setText("current latency: "
-						+ String.format("%.2f", latency)
-						+ " ms;    event rate: "
-						+ String.format("%.2f", eventRate) + " Hz");
+						+ String.format("%.2f", latency) + " ms");
+				tv5.setText("event rate: " + String.format("%.2f", eventRate)
+						+ " Hz");
 
 				if (touchActive && myLatency.size() < 1000) {
 					paintText.setColor(Color.parseColor("#FFA500"));
@@ -358,6 +364,7 @@ public class AnimationView extends View {
 
 				if (median > 0) {
 					tv2.setTextColor(Color.BLACK);
+					tv5.setTextColor(Color.BLACK);
 				}
 
 				tv3.setText("average: " + String.format("%.2f", averageLatency)
@@ -415,8 +422,10 @@ public class AnimationView extends View {
 					touchA = 0;
 				}
 
-				paintTouch.setColor(Color.GREEN);
-				canvas.drawLine(point.x, point.y, cX, cY, paintTouch);
+				if (MainActivity.showSector) {
+					paintTouch.setColor(Color.GREEN);
+					canvas.drawLine(point.x, point.y, cX, cY, paintTouch);
+				}
 				paintTouch.setColor(Color.GRAY);
 
 				theta = Math
@@ -480,6 +489,7 @@ public class AnimationView extends View {
 					paintText.setColor(Color.RED);
 					paintTouch.setColor(Color.RED);
 					tv2.setTextColor(Color.RED);
+					tv5.setTextColor(Color.RED);
 					if (touchActive && (2 * touchDelta > bm_offsetX)) {
 						canvas.drawCircle(cX, cY, radius - bm_offsetX / 2,
 								wrongMove);
@@ -492,10 +502,11 @@ public class AnimationView extends View {
 					paintText.setColor(Color.BLACK);
 					paintTouch.setColor(Color.GRAY);
 					tv2.setTextColor(Color.BLACK);
+					tv5.setTextColor(Color.BLACK);
 				}
 
 				// /////////////////////
-				if (touchActive) {
+				if (touchActive && MainActivity.showSector) {
 					canvas.drawArc(oval, startAngle, sweepAngle, true,
 							paintTouch);
 				}
@@ -528,9 +539,9 @@ public class AnimationView extends View {
 				}
 
 				tv2.setText("current latency: "
-						+ String.format("%.2f", latency)
-						+ " ms;    event rate: "
-						+ String.format("%.2f", eventRate) + " Hz");
+						+ String.format("%.2f", latency) + " ms");
+				tv5.setText("event rate: " + String.format("%.2f", eventRate)
+						+ " Hz");
 
 				if (touchActive && myLatency.size() < 1000) {
 					paintText.setColor(Color.parseColor("#FFA500"));
@@ -546,6 +557,7 @@ public class AnimationView extends View {
 				}
 				if (median > 0) {
 					tv2.setTextColor(Color.BLACK);
+					tv5.setTextColor(Color.BLACK);
 				}
 
 				tv3.setText("average: " + String.format("%.2f", averageLatency)
