@@ -65,7 +65,7 @@ public class AnimationView extends View {
 	public static int count;
 	long millis1, millis2, millis3, millis4;
 	long time360 = 0;
-	long historicTime = 0;
+	long dispatchTime = 0;
 	int touchCount = 0;
 	double speed = 0;
 	double latency;
@@ -632,15 +632,14 @@ public class AnimationView extends View {
 
 			touchActive = true;
 			touchCount += event.getHistorySize();
-			if (event.getHistorySize() > 1) {
-				try {
-					historicTime = event.getEventTime()
-							- event.getHistoricalEventTime(0);
-					dispatchLatency.add(historicTime);
 
-				} catch (IllegalArgumentException e) {
-					Log.d(TAG, e.toString());
-				}
+			try {
+				dispatchTime = SystemClock.uptimeMillis()
+						- event.getEventTime();
+				dispatchLatency.add(dispatchTime);
+
+			} catch (IllegalArgumentException e) {
+				Log.d(TAG, e.toString());
 			}
 
 			millis4 = SystemClock.elapsedRealtime();
@@ -653,7 +652,7 @@ public class AnimationView extends View {
 			alpha = 0;
 			theta = 0;
 			touchActive = false;
-			// historicTime = 0;
+			// dispatchTime = 0;
 
 			if (myLatency.size() == 1000) {
 
